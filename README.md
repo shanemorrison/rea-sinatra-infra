@@ -25,3 +25,4 @@
   1. Host level firewall not configured: it is good practice to configure a host level firewall in case of misconfiguration of the security group.
   1. Host OS patching: No automated host OS patching has been configured. Triggering a rebuild of the EC2 instance will however result in the latest OS patches and App code being deployed.
   1. Wasted VM resources: This app is tiny, and is running in the smallest EC2 instance, but that's still overkill. A good way to combat this waste would be to package the app into a docker container and run it on a container cluster where only the minimum resources required would be consumed, and shared with other workloads.
+  1. No persistent storage for app data: although this is a simple hello world app, a real app would require some persistent data storage that could be retained between different versions of the app being deployed. This could be provided by a RDS database, EFS volume, or S3.
