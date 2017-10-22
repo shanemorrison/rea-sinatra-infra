@@ -9,6 +9,16 @@ Parameters:
     Default: t2.nano
     Description: Enter an instance type for the EC2 instance.
 
+  KeyNameParam:
+    Type: String
+    Default: sinatra
+    Description: An AWS EC2 Key Name, must already exist
+
+  SSHCidrParam:
+    Type: String
+    Default: 0.0.0.0/0
+    Description: A source CIDR address to allow SSH connections from
+
 Resources:
   SinatraSG:
     Type: AWS::EC2::SecurityGroup
@@ -18,7 +28,7 @@ Resources:
       - IpProtocol: tcp #Allow ssh from world
         FromPort: 22
         ToPort: 22
-        CidrIp: 0.0.0.0/0
+        CidrIp: !Ref SSHCidrParam
       - IpProtocol: tcp #Allow sinatra from world
         FromPort: 80
         ToPort: 80
@@ -29,7 +39,7 @@ Resources:
     Properties:
       ImageId: !Ref AmiIdParam
       InstanceType: !Ref InstanceTypeParam
-      KeyName: sinatra
+      KeyName: !Ref KeyNameParam
       SecurityGroupIds:
         - !Ref SinatraSG
       UserData:
