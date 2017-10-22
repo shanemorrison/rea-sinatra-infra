@@ -19,6 +19,14 @@ Parameters:
     Default: 0.0.0.0/0
     Description: A source CIDR address to allow SSH connections from
 
+Outputs:
+  SinatraURL:
+    Description: URL where the simple sinatra app can be accessed
+    Value: !Join
+      - ""
+      - - "http://"
+        - !GetAtt SinatraEc2.PublicIp
+
 Resources:
   SinatraSG:
     Type: AWS::EC2::SecurityGroup
