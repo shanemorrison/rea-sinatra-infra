@@ -1,0 +1,30 @@
+Parameters:
+  AmiIdParam:
+    Type: String
+    Default: ami-8c1be5f6
+    Description: AMI Id for the EC2 instance. Latest Amazon Linux is recommended
+
+  InstanceTypeParam:
+    Type: String
+    Default: t2.nano
+    Description: Enter an instance type for the EC2 instance.
+
+Resources:
+  SinatraSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: allow traffic to sinatra app
+      SecurityGroupIngress:
+      - IpProtocol: tcp #Allow ssh from world
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+
+  SinatraEc2:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      ImageId: !Ref AmiIdParam
+      InstanceType: !Ref InstanceTypeParam
+      KeyName: sinatra
+      SecurityGroupIds:
+        - !Ref SinatraSG
