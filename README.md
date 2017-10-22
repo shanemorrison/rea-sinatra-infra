@@ -12,6 +12,8 @@
   1. Web Server: Rack - Due to lacking in depth knowledge of Ruby application hosting, decided to use the built in rack provided server
   1. App run as unprivileged user: Rack running as a standard user 'sinatra', prevents application vulnerabilities from exposing privileged access to your host
   1. No host level firewall configured, for simplicity only security group has been used to prevent unintended access to the host.
+  1. CloudFormation: Easy to get started with, supports all of AWS's feature set and requires no infrastructure to get up and running. Means the infra can be built and disposed of with a few clicks / commands, and rebuilt just as easily.
+  1. IPTables for port forwarding TCP80 to TCP9292: Because this is lightweight and fast, so shouldn't result in any bottlenecks or extra attack surface from a security point of view.
 
 ## Limitations / Areas for improvement
   1. Uses default VPC / subnets etc in your AWS account. Ideally, define all the required VPC, subnets, DHCP, NACLs, route tables,  Internet Gateways in CloudFormation.
