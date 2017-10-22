@@ -28,3 +28,31 @@ Resources:
       KeyName: sinatra
       SecurityGroupIds:
         - !Ref SinatraSG
+      UserData:
+        !Base64 |
+          #!/bin/bash
+          #Install/config dependencies for the sinatra app
+
+          # - git - to checkout the code with
+          # - ruby2.2 - for the sinatra app
+          yum -y install git ruby24
+
+          #Use ruby2.2 by default
+          alternatives --set ruby /usr/bin/ruby2.4
+
+          #  - create a user to run the app as
+          useradd -m sinatra
+
+          #install and run the sinatra app
+          su - sinatra << 'EOF'
+          cd ~
+          git clone https://github.com/rea-cruitment/simple-sinatra-app.git
+          cd ~/simple-sinatra-app
+          gem install bundler
+          bundle install
+          EOF
+
+          #run the sinatra app on startup
+          cat << 'EOF' >> /etc/rc.d/rc.local
+          su - sinatra -c "cd ~sinatra/simple-sinatra-app; rackup >> ~sinatra/sinatra.log 2>&1 &"
+          EOF
