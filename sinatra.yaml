@@ -19,6 +19,10 @@ Resources:
         FromPort: 22
         ToPort: 22
         CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp #Allow sinatra from world
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
 
   SinatraEc2:
     Type: "AWS::EC2::Instance"
@@ -31,8 +35,10 @@ Resources:
       UserData:
         !Base64 |
           #!/bin/bash
-          #Install/config dependencies for the sinatra app
+          #Start from an up-to-date base
+          yum -y update
 
+          #Install/config dependencies for the sinatra app
           # - git - to checkout the code with
           # - ruby2.2 - for the sinatra app
           yum -y install git ruby24
@@ -52,7 +58,11 @@ Resources:
           bundle install
           EOF
 
+          #forward port 80 to sinatra app
+          iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 9292
+          iptables-save > /etc/sysconfig/iptables
+
           #run the sinatra app on startup
           cat << 'EOF' >> /etc/rc.d/rc.local
-          su - sinatra -c "cd ~sinatra/simple-sinatra-app; rackup >> ~sinatra/sinatra.log 2>&1 &"
+          su - sinatra -c "cd ~sinatra/simple-sinatra-app; rackup -o 0.0.0.0 >> ~sinatra/sinatra.log 2>&1 &"
           EOF
