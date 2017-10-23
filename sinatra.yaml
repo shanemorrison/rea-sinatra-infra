@@ -53,22 +53,25 @@ Resources:
       UserData:
         !Base64 |
           #!/bin/bash
+          #Variables
+          RUNASUSER=sinatra #User to run the app as
+
           #Start from an up-to-date base
           yum -y update
 
           #Install/config dependencies for the sinatra app
           # - git - to checkout the code with
-          # - ruby2.2 - for the sinatra app
+          # - ruby2.4 - for the sinatra app
           yum -y install git ruby24
 
-          #Use ruby2.2 by default
+          #Use ruby2.4 by default
           alternatives --set ruby /usr/bin/ruby2.4
 
           #  - create a user to run the app as
-          useradd -m sinatra
+          useradd -m $RUNASUSER
 
           #install and run the sinatra app
-          su - sinatra << 'EOF'
+          su - $RUNASUSER << EOF
           cd ~
           git clone https://github.com/rea-cruitment/simple-sinatra-app.git
           cd ~/simple-sinatra-app
@@ -81,6 +84,6 @@ Resources:
           iptables-save > /etc/sysconfig/iptables
 
           #run the sinatra app on startup
-          cat << 'EOF' >> /etc/rc.d/rc.local
-          su - sinatra -c "cd ~sinatra/simple-sinatra-app; rackup -o 0.0.0.0 >> ~sinatra/sinatra.log 2>&1 &"
+          cat << EOF >> /etc/rc.d/rc.local
+          su - ${RUNASUSER} -c "cd ~${RUNASUSER}/simple-sinatra-app; rackup -o 0.0.0.0 >> ~${RUNASUSER}/sinatra.log 2>&1 &"
           EOF
